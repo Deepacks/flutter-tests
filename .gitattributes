@@ -1,2 +1,2 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+assignment/ linguist-vendored=false
+quiz/ linguist-vendored=false
