@@ -1,0 +1,4 @@
+#Wed Jun 01 02:52:25 CEST 2022
+base.0=/Users/vladimircuneaz/Documents/tests/flutter/flutter-tests/expenses/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
+renamed.0=classes.dex
+path.0=classes.dex
