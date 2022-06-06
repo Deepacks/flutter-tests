@@ -1,6 +1,9 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import './adaptive_flat_button.dart';
 
 class NewTransaction extends StatefulWidget {
   const NewTransaction(this.addTx, {Key? key}) : super(key: key);
@@ -84,13 +87,7 @@ class _NewTransactionState extends State<NewTransaction> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Date: ${DateFormat.yMd().format(_selectedDate)}'),
-                  TextButton(
-                    onPressed: _presentDatePicker,
-                    child: const Text(
-                      'Change date',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
+                  AdaptiveFlatButton("Choose Date", _presentDatePicker)
                 ],
               ),
             ),

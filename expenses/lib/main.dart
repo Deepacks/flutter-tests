@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -146,7 +147,19 @@ class _HomePageState extends State<HomePage> {
 
     final isLandscape = mediaQuery.orientation == Orientation.landscape;
 
-    final appBar = AppBar(
+    final cupertinoNavigationBar = CupertinoNavigationBar(
+      middle: const Text('Personal Expenses'),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: (() => _startAddNewTransaction(context)),
+            child: const Icon(CupertinoIcons.add, size: 24),
+          )
+        ],
+      ),
+    );
+    final materialAppBar = AppBar(
       title: const Text('Personal Expenses'),
       actions: [
         IconButton(
@@ -157,17 +170,19 @@ class _HomePageState extends State<HomePage> {
     );
 
     final availableView = mediaQuery.size.height -
-        appBar.preferredSize.height -
-        mediaQuery.padding.top;
+        (Platform.isIOS
+            ? cupertinoNavigationBar.preferredSize.height
+            : materialAppBar.preferredSize.height) -
+        mediaQuery.padding.top -
+        (Platform.isIOS ? mediaQuery.padding.bottom : 0);
 
     final txListWidget = SizedBox(
       height: availableView * 0.7,
       child: TransactionList(_userTransactions, _deleteTransaction),
     );
 
-    return Scaffold(
-      appBar: appBar,
-      body: SingleChildScrollView(
+    final pageBody = SafeArea(
+      child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -175,7 +190,10 @@ class _HomePageState extends State<HomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Show Chart'),
+                  Text(
+                    'Show Chart',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   Switch.adaptive(
                     activeColor: Theme.of(context).primaryColor,
                     value: _showChart,
@@ -203,13 +221,24 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      floatingActionButton: Platform.isIOS
-          ? null
-          : FloatingActionButton(
-              onPressed: () => _startAddNewTransaction(context),
-              child: const Icon(Icons.add),
-            ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
+
+    return Platform.isIOS
+        ? CupertinoPageScaffold(
+            navigationBar: cupertinoNavigationBar,
+            child: pageBody,
+          )
+        : Scaffold(
+            appBar: materialAppBar,
+            body: pageBody,
+            floatingActionButton: Platform.isIOS
+                ? null
+                : FloatingActionButton(
+                    onPressed: () => _startAddNewTransaction(context),
+                    child: const Icon(Icons.add),
+                  ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+          );
   }
 }
