@@ -12,10 +12,9 @@ class TransactionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 580,
-      child: transactions.isEmpty
-          ? Column(
+    return transactions.isEmpty
+        ? LayoutBuilder(
+            builder: (ctx, constraints) => Column(
               children: [
                 Text(
                   'No transactions added yet.',
@@ -25,45 +24,55 @@ class TransactionList extends StatelessWidget {
                   height: 20,
                 ),
                 SizedBox(
-                  height: 200,
+                  height: constraints.maxHeight * 0.3,
                   child: Image.asset(
                     'assets/images/waiting.png',
                     fit: BoxFit.cover,
                   ),
                 ),
               ],
-            )
-          : ListView.builder(
-              itemBuilder: (context, index) => Card(
-                elevation: 4,
-                margin: const EdgeInsets.all(5),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    radius: 30,
-                    child: Padding(
-                      padding: const EdgeInsets.all(6),
-                      child: FittedBox(
-                        child: Text('€${transactions[index].amount}'),
-                      ),
+            ),
+          )
+        : ListView.builder(
+            itemBuilder: (context, index) => Card(
+              elevation: 4,
+              margin: const EdgeInsets.all(5),
+              child: ListTile(
+                leading: CircleAvatar(
+                  radius: 30,
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: FittedBox(
+                      child: Text('€${transactions[index].amount}'),
                     ),
                   ),
-                  title: Text(
-                    transactions[index].title,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  subtitle: Text(
-                    DateFormat.yMMMd().format(transactions[index].date),
-                    style: const TextStyle(fontFamily: "Quicksand"),
-                  ),
-                  trailing: IconButton(
-                    onPressed: () => deleteTx(transactions[index].id),
-                    icon: const Icon(Icons.delete),
-                    color: Theme.of(context).errorColor,
-                  ),
                 ),
+                title: Text(
+                  transactions[index].title,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                subtitle: Text(
+                  DateFormat.yMMMd().format(transactions[index].date),
+                  style: const TextStyle(fontFamily: "Quicksand"),
+                ),
+                trailing: MediaQuery.of(context).size.width > 360
+                    ? TextButton.icon(
+                        onPressed: () => deleteTx(transactions[index].id),
+                        icon: const Icon(Icons.delete),
+                        label: const Text("Delete"),
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.all(
+                              Theme.of(context).errorColor),
+                        ),
+                      )
+                    : IconButton(
+                        onPressed: () => deleteTx(transactions[index].id),
+                        icon: const Icon(Icons.delete),
+                        color: Theme.of(context).errorColor,
+                      ),
               ),
-              itemCount: transactions.length,
             ),
-    );
+            itemCount: transactions.length,
+          );
   }
 }

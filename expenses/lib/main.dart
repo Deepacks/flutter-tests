@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -7,6 +9,8 @@ import './widgets/new_transaction.dart';
 import './widgets/transaction_list.dart';
 
 void main() {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(const App());
 }
 
@@ -57,6 +61,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var uuid = const Uuid();
+
+  bool _showChart = false;
+
   final List<Transaction> _userTransactions = [];
 
   List<Transaction> get _recentTransactions {
@@ -71,13 +78,51 @@ class _HomePageState extends State<HomePage> {
 
   void _addNewTransaction(String txTitle, double txAmount, DateTime date) {
     setState(() {
-      _userTransactions.add(
-        Transaction(
-          id: uuid.v4(),
-          title: txTitle,
-          amount: txAmount,
-          date: date,
-        ),
+      _userTransactions.addAll(
+        [
+          Transaction(
+            id: uuid.v4(),
+            title: txTitle,
+            amount: txAmount,
+            date: date,
+          ),
+          Transaction(
+            id: uuid.v4(),
+            title: txTitle,
+            amount: txAmount,
+            date: date,
+          ),
+          Transaction(
+            id: uuid.v4(),
+            title: txTitle,
+            amount: txAmount,
+            date: date,
+          ),
+          Transaction(
+            id: uuid.v4(),
+            title: txTitle,
+            amount: txAmount,
+            date: date,
+          ),
+          Transaction(
+            id: uuid.v4(),
+            title: txTitle,
+            amount: txAmount,
+            date: date,
+          ),
+          Transaction(
+            id: uuid.v4(),
+            title: txTitle,
+            amount: txAmount,
+            date: date,
+          ),
+          Transaction(
+            id: uuid.v4(),
+            title: txTitle,
+            amount: txAmount,
+            date: date,
+          )
+        ],
       );
     });
   }
@@ -96,30 +141,74 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  build(BuildContext context) {
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+
+    final appBar = AppBar(
+      title: const Text('Personal Expenses'),
+      actions: [
+        IconButton(
+          onPressed: () => _startAddNewTransaction(context),
+          icon: const Icon(Icons.add),
+        )
+      ],
+    );
+
+    final availableView = mediaQuery.size.height -
+        appBar.preferredSize.height -
+        mediaQuery.padding.top;
+
+    final txListWidget = SizedBox(
+      height: availableView * 0.7,
+      child: TransactionList(_userTransactions, _deleteTransaction),
+    );
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Personal Expenses'),
-        actions: [
-          IconButton(
-            onPressed: () => _startAddNewTransaction(context),
-            icon: const Icon(Icons.add),
-          )
-        ],
-      ),
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Chart(_recentTransactions),
-            TransactionList(_userTransactions, _deleteTransaction),
+            if (isLandscape)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Show Chart'),
+                  Switch.adaptive(
+                    activeColor: Theme.of(context).primaryColor,
+                    value: _showChart,
+                    onChanged: (isShown) {
+                      setState(() {
+                        _showChart = isShown;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            if (!isLandscape)
+              SizedBox(
+                height: availableView * 0.3,
+                child: Chart(_recentTransactions),
+              ),
+            if (!isLandscape) txListWidget,
+            if (isLandscape)
+              _showChart
+                  ? SizedBox(
+                      height: availableView * 0.7,
+                      child: Chart(_recentTransactions),
+                    )
+                  : txListWidget,
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _startAddNewTransaction(context),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: Platform.isIOS
+          ? null
+          : FloatingActionButton(
+              onPressed: () => _startAddNewTransaction(context),
+              child: const Icon(Icons.add),
+            ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
