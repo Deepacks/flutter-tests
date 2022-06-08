@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../models/transaction.dart';
+import './transaction_item.dart';
 
 class TransactionList extends StatelessWidget {
   const TransactionList(this.transactions, this.deleteTx, {Key? key})
@@ -34,43 +34,9 @@ class TransactionList extends StatelessWidget {
             ),
           )
         : ListView.builder(
-            itemBuilder: (context, index) => Card(
-              elevation: 4,
-              margin: const EdgeInsets.all(5),
-              child: ListTile(
-                leading: CircleAvatar(
-                  radius: 30,
-                  child: Padding(
-                    padding: const EdgeInsets.all(6),
-                    child: FittedBox(
-                      child: Text('€${transactions[index].amount}'),
-                    ),
-                  ),
-                ),
-                title: Text(
-                  transactions[index].title,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                subtitle: Text(
-                  DateFormat.yMMMd().format(transactions[index].date),
-                  style: const TextStyle(fontFamily: "Quicksand"),
-                ),
-                trailing: MediaQuery.of(context).size.width > 360
-                    ? TextButton.icon(
-                        onPressed: () => deleteTx(transactions[index].id),
-                        icon: const Icon(Icons.delete),
-                        label: const Text("Delete"),
-                        style: ButtonStyle(
-                          foregroundColor: MaterialStateProperty.all(
-                              Theme.of(context).errorColor),
-                        ),
-                      )
-                    : IconButton(
-                        onPressed: () => deleteTx(transactions[index].id),
-                        icon: const Icon(Icons.delete),
-                        color: Theme.of(context).errorColor,
-                      ),
-              ),
+            itemBuilder: (context, index) => TransactionItem(
+              transaction: transactions[index],
+              deleteTx: deleteTx,
             ),
             itemCount: transactions.length,
           );

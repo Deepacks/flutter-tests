@@ -61,7 +61,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var uuid = const Uuid();
+  final uuid = const Uuid();
 
   bool _showChart = false;
 
@@ -79,51 +79,13 @@ class _HomePageState extends State<HomePage> {
 
   void _addNewTransaction(String txTitle, double txAmount, DateTime date) {
     setState(() {
-      _userTransactions.addAll(
-        [
-          Transaction(
-            id: uuid.v4(),
-            title: txTitle,
-            amount: txAmount,
-            date: date,
-          ),
-          Transaction(
-            id: uuid.v4(),
-            title: txTitle,
-            amount: txAmount,
-            date: date,
-          ),
-          Transaction(
-            id: uuid.v4(),
-            title: txTitle,
-            amount: txAmount,
-            date: date,
-          ),
-          Transaction(
-            id: uuid.v4(),
-            title: txTitle,
-            amount: txAmount,
-            date: date,
-          ),
-          Transaction(
-            id: uuid.v4(),
-            title: txTitle,
-            amount: txAmount,
-            date: date,
-          ),
-          Transaction(
-            id: uuid.v4(),
-            title: txTitle,
-            amount: txAmount,
-            date: date,
-          ),
-          Transaction(
-            id: uuid.v4(),
-            title: txTitle,
-            amount: txAmount,
-            date: date,
-          )
-        ],
+      _userTransactions.add(
+        Transaction(
+          id: uuid.v4(),
+          title: txTitle,
+          amount: txAmount,
+          date: date,
+        ),
       );
     });
   }
@@ -140,6 +102,49 @@ class _HomePageState extends State<HomePage> {
       _userTransactions.removeWhere((tx) => tx.id == id);
     });
   }
+
+  List<Widget> _buildLandscapeContent(
+    double availableView,
+    Widget txListWidget,
+  ) =>
+      [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Show Chart',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            Switch.adaptive(
+              activeColor: Theme.of(context).primaryColor,
+              value: _showChart,
+              onChanged: (isShown) {
+                setState(() {
+                  _showChart = isShown;
+                });
+              },
+            ),
+          ],
+        ),
+        _showChart
+            ? SizedBox(
+                height: availableView * 0.7,
+                child: Chart(_recentTransactions),
+              )
+            : txListWidget
+      ];
+
+  List<Widget> _buildPortraitContent(
+    double availableView,
+    Widget txListWidget,
+  ) =>
+      [
+        SizedBox(
+          height: availableView * 0.3,
+          child: Chart(_recentTransactions),
+        ),
+        txListWidget,
+      ];
 
   @override
   Widget build(BuildContext context) {
@@ -187,37 +192,15 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (isLandscape)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Show Chart',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  Switch.adaptive(
-                    activeColor: Theme.of(context).primaryColor,
-                    value: _showChart,
-                    onChanged: (isShown) {
-                      setState(() {
-                        _showChart = isShown;
-                      });
-                    },
-                  ),
-                ],
+              ..._buildLandscapeContent(
+                availableView,
+                txListWidget,
+              )
+            else
+              ..._buildPortraitContent(
+                availableView,
+                txListWidget,
               ),
-            if (!isLandscape)
-              SizedBox(
-                height: availableView * 0.3,
-                child: Chart(_recentTransactions),
-              ),
-            if (!isLandscape) txListWidget,
-            if (isLandscape)
-              _showChart
-                  ? SizedBox(
-                      height: availableView * 0.7,
-                      child: Chart(_recentTransactions),
-                    )
-                  : txListWidget,
           ],
         ),
       ),
