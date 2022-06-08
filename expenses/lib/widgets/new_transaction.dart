@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../utility/truncate_to_decimal_places.dart';
 import './adaptive_flat_button.dart';
 
 class NewTransaction extends StatefulWidget {
@@ -19,9 +18,23 @@ class _NewTransactionState extends State<NewTransaction> {
   final _amountController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
 
-  double truncateToDecimalPlaces(num value, int fractionalDigits) =>
-      (value * pow(10, fractionalDigits)).truncate() /
-      pow(10, fractionalDigits);
+  // @override
+  // void initState() {
+  //   print('init');
+  //   super.initState();
+  // }
+
+  // @override
+  // void didUpdateWidget(covariant NewTransaction oldWidget) {
+  //   print('update');
+  //   super.didUpdateWidget(oldWidget);
+  // }
+
+  // @override
+  // void dispose() {
+  //   print("dispose");
+  //   super.dispose();
+  // }
 
   void _submitData() {
     final titleText = _titleController.text;
