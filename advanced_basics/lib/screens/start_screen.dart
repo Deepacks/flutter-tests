@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../widgets/styled_text.dart';
 
 class StartScreen extends StatelessWidget {
-  const StartScreen({super.key});
+  const StartScreen(this.onQuizStart, {super.key});
+
+  final VoidCallback onQuizStart;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class StartScreen extends StatelessWidget {
           const StyledText('Learn flutter the fun way!'),
           const SizedBox(height: 20),
           OutlinedButton.icon(
-            onPressed: () {},
+            onPressed: onQuizStart,
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
               side: const BorderSide(
